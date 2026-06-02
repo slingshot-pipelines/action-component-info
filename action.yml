@@ -1,0 +1,41 @@
+name: Parse component info
+description: ""
+
+inputs:
+  component:
+    required: true
+    description: The name of the component
+
+outputs:
+  INFO:
+    description: JSON component info
+    value: ${{ steps.extract-individual-component.outputs.info }}
+
+runs:
+  using: composite
+  steps:
+    -
+      id: parse-all-components
+      uses: slingshot-pipelines/action-components-info@v0
+    -
+      shell: bash
+      id: extract-individual-component
+      env:
+        COMPONENTS_INFO: ${{ steps.parse-all-components.outputs.info }}
+        COMPONENT: ${{ inputs.component }}
+      run: |
+        # Return the info for the requested component
+
+        echo "::group::Returning only the requested component"
+
+        COMPONENT_INFO=$(echo "$COMPONENTS_INFO" \
+          | jq -rc \
+            --arg component "$COMPONENT" \
+            '.[$component]')
+
+        printf '%s' "$COMPONENT_INFO" | jq '.'
+
+        echo "::endgroup::"
+
+        echo "info=$COMPONENT_INFO" >> "$GITHUB_OUTPUT"
+        
