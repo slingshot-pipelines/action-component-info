@@ -7,7 +7,7 @@ inputs:
     description: The name of the component
 
 outputs:
-  INFO:
+  info:
     description: JSON component info
     value: ${{ steps.extract-individual-component.outputs.info }}
 
@@ -16,7 +16,7 @@ runs:
   steps:
     -
       id: parse-all-components
-      uses: slingshot-pipelines/action-components-info@v0
+      uses: slingshot-pipelines/action-components-info@v1
     -
       shell: bash
       id: extract-individual-component
